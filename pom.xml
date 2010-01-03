@@ -1,0 +1,137 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>nu.lan</groupId>
+  <artifactId>Kiosk</artifactId>
+  <name>Hazard Kiosk</name>
+  <version>1.0-SNAPSHOT</version>
+  <url>http://maven.apache.org</url>
+  <properties>
+    <itmill.toolkit.version>6.1.3</itmill.toolkit.version>
+    <gwtVersion>2.0.0</gwtVersion>
+  </properties>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.1</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+              <tasks>
+                <property name="compile_classpath" refid="maven.compile.classpath" />
+                <property name="client-side-src-location" value="${project.build.sourceDirectory}" />
+                <property name="client-side-destination" value="${project.build.directory}/classes/ITMILL/widgetsets" />
+                <path id="compile.classpath">
+                  <pathelement path="${client-side-src-location}" />
+                  <pathelement path="${compile_classpath}" />
+                </path>
+                <!--<java classname="com.google.gwt.dev.Compiler" failonerror="yes" fork="yes" maxmemory="1024m">
+                  <arg value="-out" />
+                  <arg value="${client-side-destination}" />
+                  <arg value="mlyly.itmill.widgets.gwt.MyWidgetSet" />
+                  <classpath>
+                    <path refid="compile.classpath" />
+                  </classpath>
+                </java>-->
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+    <!--   Include SOURCE in output artifact for GWT (GWT libraries must include sources)
+  -->
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+  </build>
+  <dependencies>
+    <!--   GWT deps (from central repo)
+  -->
+ <!--
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-servlet</artifactId>
+      <version>${gwtVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>${gwtVersion}</version>
+      <classifier>${platform}-libs</classifier>
+      <type>zip</type>
+      <scope>provided</scope>
+    </dependency>
+
+
+  -->
+     <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-user</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+
+  </dependencies>
+  <profiles>
+    <profile>
+      <id>gwt-dev-windows</id>
+      <properties>
+        <platform>windows</platform>
+      </properties>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+        <os>
+          <family>windows</family>
+        </os>
+      </activation>
+    </profile>
+    <profile>
+      <id>gwt-dev-mac</id>
+      <properties>
+        <platform>mac</platform>
+      </properties>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+    </profile>
+    <profile>
+      <id>gwt-dev-linux</id>
+      <properties>
+        <platform>linux</platform>
+      </properties>
+      <activation>
+        <os>
+          <name>linux</name>
+        </os>
+      </activation>
+    </profile>
+  </profiles>
+</project>

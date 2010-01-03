@@ -32,7 +32,6 @@ public class BigTableStockService implements StockService
         Long ammountSold = (Long) entity.getProperty("Sold");
         ammountSold = ammountSold + purchase.numberOf(item);
         entity.setProperty("Sold", ammountSold);
-        System.out.println(item.getName() + " now: " + ammountSold);
         datastore.put(entity);
       }
       catch (EntityNotFoundException ex) {

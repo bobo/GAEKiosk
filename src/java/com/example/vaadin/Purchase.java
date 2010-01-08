@@ -125,6 +125,15 @@ public class Purchase implements Serializable
 
   private void fireListeners() {
     for (PurchaseListener listener : listeners)
-      listener.fireChange();
+      listener.onPurchase();
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (StockItem stockItem : purchasedItems.keySet()) {
+      sb.append(stockItem.getName()).append(": ").append(purchasedItems.get(stockItem).size()).append(" \t");
+    }
+    return sb.toString();
   }
 }

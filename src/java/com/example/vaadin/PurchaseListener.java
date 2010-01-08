@@ -7,6 +7,6 @@ import java.io.Serializable;
 
 public interface PurchaseListener extends Serializable{
 
-  public void fireChange();
+  public void onPurchase();
 
 }

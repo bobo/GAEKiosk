@@ -4,8 +4,6 @@ import com.vaadin.data.Property.ConversionException;
 import com.vaadin.data.Property.ReadOnlyException;
 import com.vaadin.data.Property.ValueChangeEvent;
 import com.vaadin.data.Property.ValueChangeListener;
-import com.vaadin.terminal.Paintable.RepaintRequestEvent;
-import com.vaadin.terminal.Paintable.RepaintRequestListener;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
@@ -13,54 +11,70 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Payment implements Serializable
+public class Payment implements Serializable, PurchaseListener
 {
   private final Label sumLabel = new Label();
   private final Label returnMoney = new Label();
   private final TextField recievedMoney = new TextField();
-  StockService fakeStockService = new BigTableStockService();
-  Purchase purchase;
+  private StockService stockService = new BigTableStockService();
+  private Purchase purchase;
   private final HorizontalLayout window = new HorizontalLayout();
+  private Button finish = new Button("Slutför köp");
+  private List<PayementListener> listeners = new ArrayList<PayementListener>();
 
   public Payment(Purchase purchase) {
     this.purchase = purchase;
     returnMoney.setContentMode(Label.CONTENT_XHTML);
+    addComponents();
+    recievedMoney.setImmediate(true);
+    addListeners();
+  }
+
+  private void addComponents() {
     window.addComponent(sumLabel);
     window.addComponent(recievedMoney);
     window.addComponent(returnMoney);
-    purchase.addListener(listener);
     window.setWidth("600px");
-    Button finish = new Button("Slutför köp");
     window.addComponent(finish);
+  }
+
+  private void addListeners() {
     finish.addListener(new Button.ClickListener()
     {
       public void buttonClick(ClickEvent event) {
-        fakeStockService.completePurchase(Payment.this.purchase);
+        stockService.completePurchase(Payment.this.purchase);
+        firePaymentListeners();
         clearPurchase();
       }
     });
-    recievedMoney.setImmediate(true);
     recievedMoney.addListener(new ValueChangeListener()
     {
       public void valueChange(ValueChangeEvent event) {
         updateReturnMoney();
       }
     });
+    purchase.addListener(this);
   }
-  private PurchaseListener listener = new PurchaseListener()
-  {
-    public void fireChange() {
-      sumLabel.setCaption("Pris: " + purchase.getPurchasePrice());
-      updateReturnMoney();
+
+  private void firePaymentListeners() {
+    for (PayementListener payementListener : listeners) {
+      payementListener.onPayment();
     }
-  };
+  }
+
+  public void onPurchase() {
+    sumLabel.setCaption("Pris: " + purchase.getPurchasePrice());
+    updateReturnMoney();
+  }
 
   private void clearPurchase() throws ConversionException, ReadOnlyException {
     Payment.this.purchase.clear();
     recievedMoney.setValue(0);
     updateReturnMoney();
-    listener.fireChange();
+    onPurchase();
   }
 
   public Component getWindow() {
@@ -122,5 +136,9 @@ public class Payment implements Serializable
 
   private int appendTwenties(int sum, StringBuilder toReturn) {
     return appendAmmount(sum, toReturn, 20);
+  }
+
+  void addListener(PurchaseHistory purchaseHistory) {
+    listeners.add(purchaseHistory);
   }
 }

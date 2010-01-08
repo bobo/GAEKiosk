@@ -7,11 +7,6 @@ package com.example.vaadin;
 
 import com.vaadin.Application;
 import com.vaadin.ui.*;
-import com.vaadin.ui.Button.ClickEvent;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /** 
  *
@@ -28,14 +23,21 @@ public class MyApplication extends Application
     final Window mainWindow = new Window("Kiosk");
     Button createNew = new Button("Lägg till");
     setMainWindow(mainWindow);
+    HorizontalLayout l = new HorizontalLayout();
+    
     mainWindow.addComponent(new ItemList(purchase));
     HorizontalLayout horizontalLayout = new HorizontalLayout();
     horizontalLayout.addComponent(new StockItemsComboBox(purchase, stockService));
     horizontalLayout.addComponent(createNew);
     mainWindow.addComponent(horizontalLayout);
-    mainWindow.addComponent(purchase.getComponent());
+    l.addComponent(purchase.getComponent());
+    mainWindow.addComponent(l);
     Payment payment = new Payment(purchase);
     mainWindow.addComponent(payment.getWindow());
     createNew.addListener(new CreateItemWindow(mainWindow));
+
+    PurchaseHistory purchaseHistory = new PurchaseHistory();
+    payment.addListener(purchaseHistory);
+    l.addComponent(purchaseHistory);
   }
 }

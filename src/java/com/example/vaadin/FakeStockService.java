@@ -1,6 +1,7 @@
 package com.example.vaadin;
 
 import com.google.common.collect.ImmutableList;
+import java.util.Map;
 
 public class FakeStockService implements StockService
 {
@@ -17,6 +18,14 @@ public class FakeStockService implements StockService
   }
 
   public void addStockItem(StockItem stockItem) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  public Map<Long, String> getPurchaseList() {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  public void removePurchase(long id) {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 

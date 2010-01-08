@@ -1,4 +1,4 @@
-/*
+   /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -6,6 +6,7 @@ package com.example.vaadin;
 
 import com.google.common.collect.ImmutableList;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  *
@@ -18,4 +19,8 @@ public interface StockService extends Serializable
   public void completePurchase(Purchase purchase);
 
   public void addStockItem(StockItem stockItem);
+
+  public Map<Long, String> getPurchaseList();
+
+  public void removePurchase(long id);
 }

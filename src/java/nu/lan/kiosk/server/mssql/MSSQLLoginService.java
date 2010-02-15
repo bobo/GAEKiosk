@@ -4,21 +4,11 @@
  */
 package nu.lan.kiosk.server.mssql;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import nu.lan.kiosk.util.Hasher;
 import nu.lan.kiosk.server.LoginService;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import static nu.lan.kiosk.server.ConnectionFactory.*;
 
 /**
  *
@@ -51,19 +41,5 @@ public class MSSQLLoginService implements LoginService {
             ex.printStackTrace();
         }
         return false;
-    }
-
-    private Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("net.sourceforge.jtds.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(MSSQLLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Properties p = new Properties();
-        File file = new File("db.properties");
-        System.out.println("file.path: " + file.getAbsolutePath());
-        p.load(new FileReader(file));
-        Connection con = DriverManager.getConnection(p.getProperty("url"), p.getProperty("user"), p.getProperty("password"));
-        return con;
     }
 }

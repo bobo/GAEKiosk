@@ -6,11 +6,6 @@ import nu.lan.kiosk.model.StockItem;
 import nu.lan.kiosk.server.StockService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,9 +14,9 @@ import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static nu.lan.kiosk.server.ConnectionFactory.*;
 
 public class MSSQLStockService implements StockService {
 
@@ -161,20 +156,6 @@ public class MSSQLStockService implements StockService {
             close(p);
         }
         throw new RuntimeException("Could not find any setting for lan");
-    }
-
-    private Connection getConnection() throws SQLException, IOException {
-        try {
-            Class.forName("net.sourceforge.jtds.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(MSSQLLoginService.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Properties p = new Properties();
-        File file = new File("db.properties");
-        System.out.println("file.path: " + file.getAbsolutePath());
-        p.load(new FileReader(file));
-        Connection con = DriverManager.getConnection(p.getProperty("url"), p.getProperty("user"), p.getProperty("password"));
-        return con;
     }
 
     @Override

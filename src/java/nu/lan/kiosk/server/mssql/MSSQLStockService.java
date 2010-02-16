@@ -1,11 +1,14 @@
 package nu.lan.kiosk.server.mssql;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import nu.lan.kiosk.util.Parser;
 import nu.lan.kiosk.components.Purchase;
 import nu.lan.kiosk.model.StockItem;
 import nu.lan.kiosk.server.StockService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.LinkedListMultimap;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -100,33 +103,27 @@ public class MSSQLStockService implements StockService {
 
     @Override
     public Map<Long, String> getPurchaseList() {
-        Map<Long, String> map = new HashMap<Long, String>();
+        Multimap<Long, String> map = LinkedListMultimap.create();
+        Map<Long, String> newmap = Maps.newHashMap();
+
         System.out.println("getting list");
         PreparedStatement prepareStatement = null;
         try {
             prepareStatement = getConnection().prepareStatement("SELECT KioskID, KioskDate, ProduktNamn FROM Kiosk join Produkter on KioskEAN=ProduktEAN where KioskLan=? order by KioskDate desc, ProduktNamn desc");
             prepareStatement.setInt(1, getLanNumber());
             ResultSet res = prepareStatement.executeQuery();
-            Timestamp previousDate = new Timestamp(0);
-            Timestamp currentDate = new Timestamp(System.currentTimeMillis());
-            StringBuilder sb = new StringBuilder();
             while (res.next()) {
-                currentDate = res.getTimestamp("KioskDate");
-                if (previousDate.equals(currentDate)) {
-                    sb.append(res.getString("ProduktNamn")).append("#");
-                } else {
-                    map.put(currentDate.getTime(), sb.toString());
-                    sb = new StringBuilder();
-                    sb.append(res.getString("ProduktNamn")).append("#");
-                    previousDate = currentDate;
-                }
+                map.put(res.getTimestamp("KioskDate").getTime(), res.getString("ProduktNamn"));
+            }
+            for (Long long1 : map.keySet()) {
+                newmap.put(long1, map.get(long1).toString().replaceAll(", ", "#").replace("[", "").replace("]", ""));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         } finally {
             close(prepareStatement);
         }
-        Parser parser = new Parser(map);
+        Parser parser = new Parser(newmap);
         return parser.parseMap();
     }
 
@@ -160,5 +157,17 @@ public class MSSQLStockService implements StockService {
 
     @Override
     public void removePurchase(long id) {
+        PreparedStatement prepareStatement = null;
+        try {
+            System.out.println("deleting purchase with id: " + id + " (time: " + new Timestamp(id));
+            prepareStatement = getConnection().prepareStatement("delete FROM Kiosk where KioskDate=?");
+            prepareStatement.setTimestamp(1, new Timestamp(id));
+            prepareStatement.executeUpdate();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } finally {
+            close(prepareStatement);
+        }
+
     }
 }

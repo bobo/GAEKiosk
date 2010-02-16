@@ -21,6 +21,7 @@ public class PurchaseHistory extends Table implements PayementListener
 
   }
 
+    @Override
   public void onPayment() {
     updateHistory();
   }
@@ -44,6 +45,7 @@ public class PurchaseHistory extends Table implements PayementListener
       Item i = addItem(id);
       i.getItemProperty("Köp").setValue(purchaseList.get(id));
       i.getItemProperty("Ta bort").setValue(new DeleteButton(id));
+      System.out.println(purchaseList.get(id)+"="+id);
     }
   }
 

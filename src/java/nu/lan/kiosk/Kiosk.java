@@ -4,18 +4,18 @@
  */
 package nu.lan.kiosk;
 
-import nu.lan.kiosk.components.EANScanner;
-import nu.lan.kiosk.components.ItemList;
-import nu.lan.kiosk.components.Payment;
-import nu.lan.kiosk.components.Purchase;
-import nu.lan.kiosk.model.StockItem;
-import nu.lan.kiosk.server.StockService;
 import com.google.common.collect.ImmutableList;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import java.util.ArrayList;
 import java.util.List;
+import nu.lan.kiosk.components.EANScanner;
+import nu.lan.kiosk.components.ItemList;
+import nu.lan.kiosk.components.Payment;
+import nu.lan.kiosk.components.Purchase;
+import nu.lan.kiosk.model.StockItem;
+import nu.lan.kiosk.server.StockService;
 
 /**
  *
@@ -27,9 +27,6 @@ public class Kiosk extends VerticalLayout {
     private Purchase purchase = new Purchase();
 
     public Kiosk() {
-        setWidth("1024px");
-        setHeight("768px");
-
         init();
     }
 
@@ -44,22 +41,19 @@ public class Kiosk extends VerticalLayout {
         addComponent(horizontalLayout);
         mainWindow.addComponent(purchase.getComponent());
         addComponent(mainWindow);
+        Payment payment = new Payment(purchase);
+        addComponent(payment.getWindow());
         createNew.addListener(new CreateItemWindow(this));
 
-        VerticalLayout vl = new VerticalLayout();
-        Payment payment = new Payment(purchase);
         PurchaseHistory purchaseHistory = new PurchaseHistory();
         payment.addListener(purchaseHistory);
-        vl.addComponent(purchaseHistory);
-        vl.addComponent(payment.getWindow());
-        vl.setSizeFull();
-        mainWindow.addComponent(vl);
+        mainWindow.addComponent(purchaseHistory);
     }
 
     private List<StockItem> getStock() {
         ImmutableList<StockItem> itemList = stockService.getItemList();
         for (StockItem stockItem : itemList) {
-            System.out.println(stockItem.getEan());
+        System.out.println(stockItem.getEan());
         }
         return new ArrayList<StockItem>(itemList);
 

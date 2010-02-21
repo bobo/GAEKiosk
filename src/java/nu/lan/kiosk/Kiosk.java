@@ -34,27 +34,32 @@ public class Kiosk extends VerticalLayout {
         Button createNew = new Button("Lägg till");
         HorizontalLayout mainWindow = new HorizontalLayout();
         List<StockItem> stock = getStock();
-        addComponent(new ItemList(purchase, stock));
-        HorizontalLayout horizontalLayout = new HorizontalLayout();
-        horizontalLayout.addComponent(createNew);
-        horizontalLayout.addComponent(new EANScanner(stock, purchase));
-        addComponent(horizontalLayout);
-        mainWindow.addComponent(purchase.getComponent());
+        HorizontalLayout top = new HorizontalLayout();
+        top.addComponent(createNew);
+        final EANScanner eANScanner = new EANScanner(stock, purchase);
+        
+        top.addComponent(eANScanner);
+        addComponent(top);
+        VerticalLayout left = new VerticalLayout();
+        final ItemList itemList = new ItemList(purchase, stock);
+        Payment payment = new Payment(purchase, itemList);
+        left.addComponent(purchase.getComponent());
+        left.addComponent(payment.getWindow());
+        mainWindow.addComponent(left);
         addComponent(mainWindow);
-        Payment payment = new Payment(purchase);
-        addComponent(payment.getWindow());
         createNew.addListener(new CreateItemWindow(this));
-
         PurchaseHistory purchaseHistory = new PurchaseHistory();
         payment.addListener(purchaseHistory);
         mainWindow.addComponent(purchaseHistory);
+
+        mainWindow.addComponent(itemList);
+    eANScanner.focus();
     }
 
     private List<StockItem> getStock() {
+        long start = System.currentTimeMillis();
         ImmutableList<StockItem> itemList = stockService.getItemList();
-        for (StockItem stockItem : itemList) {
-        System.out.println(stockItem.getEan());
-        }
+        System.out.println("time to get stock: " + (System.currentTimeMillis() - start));
         return new ArrayList<StockItem>(itemList);
 
     }

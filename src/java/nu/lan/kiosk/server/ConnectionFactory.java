@@ -35,6 +35,7 @@ public class ConnectionFactory {
         try {
             p.load(new FileReader(file));
         } catch (IOException ex) {
+            System.out.println("Missing file: "+file.getAbsolutePath());
             Logger.getLogger(MSSQLStockService.class.getName()).log(Level.SEVERE, null, ex);
         }
         Connection con = DriverManager.getConnection(p.getProperty("url"), p.getProperty("user"), p.getProperty("password"));

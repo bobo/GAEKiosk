@@ -30,7 +30,6 @@ public class MSSQLStockService implements StockService {
     public ImmutableList<StockItem> getItemList() {
         Map<String, Integer> countMap = getCountMap();
         Builder<StockItem> items = ImmutableList.builder();
-        System.out.println("getting list");
         try {
 
             PreparedStatement prepareStatement = getConnection().prepareStatement("select * FROM Produkter");
@@ -38,7 +37,6 @@ public class MSSQLStockService implements StockService {
             while (res.next()) {
                 StockItem stockItem = new StockItem(res.getString("ProduktNamn"), res.getInt("ProduktPris"), res.getString("ProduktEAN"), countMap.get(res.getString("ProduktEAN")));
                 items.add(stockItem);
-                System.out.println(stockItem.debugString());
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -48,7 +46,6 @@ public class MSSQLStockService implements StockService {
 
     @Override
     public void completePurchase(Purchase purchase) {
-        System.out.println("purchase: " + purchase);
         PreparedStatement prepareStatement = null;
         try {
 
@@ -87,17 +84,18 @@ public class MSSQLStockService implements StockService {
     private Map<String, Integer> getCountMap() {
         try {
             Map<String, Integer> counts = new HashMap<String, Integer>();
-            PreparedStatement prepareStatement = getConnection().prepareStatement("SELECT COUNT(KioskDate), ProduktEAN FROM Kiosk join Produkter on KioskEAN=ProduktEAN where KioskLan=? group by ProduktEAN");
+            PreparedStatement prepareStatement = getConnection().prepareStatement("SELECT COUNT(KioskDate), ProduktEAN FROM Kiosk join Produkter on KioskEAN=ProduktEAN where KioskLan=? and KioskDate>dateadd(hh,-6,getdate()) group by ProduktEAN");
             prepareStatement.setInt(1, getLanNumber());
             ResultSet res = prepareStatement.executeQuery();
             while (res.next()) {
                 counts.put(res.getString("ProduktEAN"), res.getInt(1));
             }
+            System.out.println(counts);
             return counts;
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        System.out.println(":_(");
+
         return Collections.EMPTY_MAP;
     }
 
@@ -106,7 +104,6 @@ public class MSSQLStockService implements StockService {
         Multimap<Long, String> map = LinkedListMultimap.create();
         Map<Long, String> newmap = Maps.newHashMap();
 
-        System.out.println("getting list");
         PreparedStatement prepareStatement = null;
         try {
             prepareStatement = getConnection().prepareStatement("SELECT KioskID, KioskDate, ProduktNamn FROM Kiosk join Produkter on KioskEAN=ProduktEAN where KioskLan=? order by KioskDate desc, ProduktNamn desc");

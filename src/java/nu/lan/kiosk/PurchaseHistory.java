@@ -16,8 +16,8 @@ public class PurchaseHistory extends Table implements PayementListener
     addContainerProperty("Ta bort", Button.class, null);
     addContainerProperty("Köp", String.class, null);
     updateHistory();
-    setHeight("400px");
-    setWidth("300px");
+    setHeight("470px");
+    setWidth("280px");
 
   }
 
@@ -45,7 +45,6 @@ public class PurchaseHistory extends Table implements PayementListener
       Item i = addItem(id);
       i.getItemProperty("Köp").setValue(purchaseList.get(id));
       i.getItemProperty("Ta bort").setValue(new DeleteButton(id));
-      System.out.println(purchaseList.get(id)+"="+id);
     }
   }
 

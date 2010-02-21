@@ -16,9 +16,10 @@ public class KeyPad extends GridLayout {
     public KeyPad(PurchaseListener listeners) {
         super(5, 5);
         this.listeners = listeners;
-       
+
         addComponent(getAdativeButton(1), 0, 0, 0, 1);
-        addComponent(getAdativeButton(5), 0, 2, 0, 3);
+        addComponent(getAdativeButton(5), 0, 2, 0, 2);
+        addComponent(getAdativeButton(500), 0, 3, 0, 3);
         addComponent(new ConcatButton("0"), 2, 3, 3, 3);
         addComponent(getAdativeButton(10));
         addComponent(new ConcatButton("7"));
@@ -39,7 +40,8 @@ public class KeyPad extends GridLayout {
 
     private NativeButton getAdativeButton(final int number) {
         NativeButton b = new NativeButton("" + number);
-        b.setSizeFull();
+        b.setWidth("60px");
+        b.setHeight("30px");
         b.addListener(new Button.ClickListener() {
 
             @Override
@@ -55,7 +57,8 @@ public class KeyPad extends GridLayout {
 
         public ConcatButton(final String number) {
             super(number);
-            setSizeFull();
+            setWidth("60px");
+            setHeight("30px");
             super.addListener(new ClickListener() {
 
                 @Override
@@ -91,5 +94,10 @@ public class KeyPad extends GridLayout {
 
     public int getSum() {
         return sum;
+    }
+    public void clear(){
+        sum=0;
+        field.setValue(sum);
+
     }
 }

@@ -2,6 +2,7 @@ package nu.lan.kiosk.server.mssql;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import java.util.List;
 import nu.lan.kiosk.util.Parser;
 import nu.lan.kiosk.components.Purchase;
 import nu.lan.kiosk.model.StockItem;
@@ -19,8 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import static nu.lan.kiosk.server.ConnectionFactory.*;
+import javax.sql.DataSource;
+import lombok.SneakyThrows;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 
+import static nu.lan.kiosk.server.ConnectionFactory.*;
 public class MSSQLStockService implements StockService {
 
     public MSSQLStockService() {
@@ -35,13 +41,21 @@ public class MSSQLStockService implements StockService {
             PreparedStatement prepareStatement = getConnection().prepareStatement("select * FROM Produkter");
             ResultSet res = prepareStatement.executeQuery();
             while (res.next()) {
-                StockItem stockItem = new StockItem(res.getString("ProduktNamn"), res.getInt("ProduktPris"), res.getString("ProduktEAN"), countMap.get(res.getString("ProduktEAN")));
+                StockItem stockItem = new StockItem(res.getString("ProduktNamn"), res.getInt("ProduktPris"), res.getString("ProduktEAN"), countMap.get(res.getString("ProduktEAN")),res.getString("ProduktKategori"));
                 items.add(stockItem);
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
         return items.build();
+    }
+    
+    @SneakyThrows
+    public ImmutableList<String> getCategories (){
+        DataSource asdf = new SingleConnectionDataSource(getConnection(), false);
+        SimpleJdbcTemplate template = new SimpleJdbcTemplate(asdf);
+        List<String> result = template.query("Select distinct ProduktKategori FROM Produkter", new SingleColumnRowMapper<String>());
+        return ImmutableList.copyOf(result);
     }
 
     @Override

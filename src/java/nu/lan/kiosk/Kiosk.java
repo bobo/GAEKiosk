@@ -23,6 +23,10 @@ import nu.lan.kiosk.server.StockService;
  */
 public class Kiosk extends VerticalLayout {
 
+    HorizontalLayout mainWindow = new HorizontalLayout();
+    Button createNew = new Button("Lägg till");
+    VerticalLayout left = new VerticalLayout();
+    PurchaseHistory purchaseHistory = new PurchaseHistory();
     StockService stockService = ServiceFactory.getStockService();
     private Purchase purchase = new Purchase();
 
@@ -30,17 +34,17 @@ public class Kiosk extends VerticalLayout {
         init();
     }
 
-    public void init() {
-        Button createNew = new Button("Lägg till");
-        HorizontalLayout mainWindow = new HorizontalLayout();
+    public final void init() {
+
+
         List<StockItem> stock = getStock();
         HorizontalLayout top = new HorizontalLayout();
         top.addComponent(createNew);
         final EANScanner eANScanner = new EANScanner(stock, purchase);
-        
+
         top.addComponent(eANScanner);
         addComponent(top);
-        VerticalLayout left = new VerticalLayout();
+
         final ItemList itemList = new ItemList(purchase, stock);
         Payment payment = new Payment(purchase, itemList);
         left.addComponent(purchase.getComponent());
@@ -48,18 +52,16 @@ public class Kiosk extends VerticalLayout {
         mainWindow.addComponent(left);
         addComponent(mainWindow);
         createNew.addListener(new CreateItemWindow(this));
-        PurchaseHistory purchaseHistory = new PurchaseHistory();
+
         payment.addListener(purchaseHistory);
         mainWindow.addComponent(purchaseHistory);
 
         mainWindow.addComponent(itemList);
-    eANScanner.focus();
+        eANScanner.focus();
     }
 
     private List<StockItem> getStock() {
-        long start = System.currentTimeMillis();
         ImmutableList<StockItem> itemList = stockService.getItemList();
-        System.out.println("time to get stock: " + (System.currentTimeMillis() - start));
         return new ArrayList<StockItem>(itemList);
 
     }

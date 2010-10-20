@@ -4,6 +4,7 @@
  */
 package nu.lan.kiosk.server;
 
+import java.sql.SQLException;
 import nu.lan.kiosk.components.Purchase;
 import nu.lan.kiosk.model.StockItem;
 import com.google.common.collect.ImmutableList;
@@ -25,4 +26,6 @@ public interface StockService extends Serializable
   public Map<Long, String> getPurchaseList();
 
   public void removePurchase(long id);
+
+   public ImmutableList<String> getCategories();
 }
